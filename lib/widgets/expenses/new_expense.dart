@@ -36,13 +36,43 @@ class _NewExpenseState extends State<NewExpense> {
     setState(() => _selectedDate = date);
   }
 
-  void addNewExpense() {
+  bool _validateExpense() {
+    final amount = double.tryParse(_amountController.text);
+    return _titleController.text.trim().isNotEmpty &&
+        amount != null &&
+        amount > 0 &&
+        _selectedDate != null;
+  }
+
+  void _submitExpense() {
+    if (_validateExpense()) {
+      _addNewExpense();
+      cancelNewExpense();
+    } else {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Validation error occurred'),
+          content: const Text(
+              'Please make sure you have entered a valid title, amount and date'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  void _addNewExpense() {
     widget.addExpense(
       Expense(
         title: _titleController.text,
         amount: double.parse(_amountController.text),
-        date: DateTime.now(),
-        category: Category.food,
+        date: _selectedDate!,
+        category: _selectedCategory,
       ),
     );
   }
@@ -54,7 +84,7 @@ class _NewExpenseState extends State<NewExpense> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 48, 16, 16),
         child: Column(
           children: [
             TextField(
@@ -128,7 +158,7 @@ class _NewExpenseState extends State<NewExpense> {
                 Container(
                   margin: const EdgeInsets.only(left: 4),
                   child: FilledButton(
-                    onPressed: addNewExpense,
+                    onPressed: _submitExpense,
                     child: const Text('Save'),
                   ),
                 ),

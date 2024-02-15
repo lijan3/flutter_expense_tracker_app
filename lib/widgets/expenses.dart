@@ -28,19 +28,43 @@ class _ExpensesState extends State<Expenses> {
     ),
   ];
 
-  void addExpense(Expense exp) {
+  void _addExpense(Expense exp) {
     setState(() => _registerExpenses.add(exp));
+  }
+
+  void _removeExpense(Expense exp) {
+    final index = _registerExpenses.indexOf(exp);
+    setState(() => _registerExpenses.remove(exp));
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Expense deleted'),
+        duration: const Duration(seconds: 3),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            setState(() => _registerExpenses.insert(index, exp));
+          },
+        ),
+      ),
+    );
   }
 
   void showAddExpense() {
     showModalBottomSheet(
+      isScrollControlled: true,
       context: context,
-      builder: (ctx) => NewExpense(addExpense: addExpense),
+      builder: (ctx) => NewExpense(addExpense: _addExpense),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    Widget noContent = const Center(
+      child: Text('No expenses to show'),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Expense Tracker'),
@@ -55,7 +79,12 @@ class _ExpensesState extends State<Expenses> {
         children: [
           const Text('Chart'),
           Expanded(
-            child: ExpensesList(expenses: _registerExpenses),
+            child: _registerExpenses.isEmpty
+                ? noContent
+                : ExpensesList(
+                    expenses: _registerExpenses,
+                    removeExpense: _removeExpense,
+                  ),
           ),
         ],
       ),
