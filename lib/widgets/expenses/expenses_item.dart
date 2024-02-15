@@ -12,8 +12,12 @@ class ExpensesItem extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(expense.title),
+            Text(
+              expense.title,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
             Container(
               margin: const EdgeInsets.only(
                 top: 4,
