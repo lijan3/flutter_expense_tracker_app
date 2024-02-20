@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_expense_tracker_app/widgets/chart/chart.dart';
 import 'package:flutter_expense_tracker_app/widgets/expenses/expenses_list.dart';
 import 'package:flutter_expense_tracker_app/models/expense.dart';
 import 'package:flutter_expense_tracker_app/widgets/expenses/new_expense.dart';
@@ -13,7 +14,7 @@ class Expenses extends StatefulWidget {
 }
 
 class _ExpensesState extends State<Expenses> {
-  final List<Expense> _registerExpenses = [
+  final List<Expense> _registeredExpenses = [
     Expense(
       title: 'Flutter course',
       amount: 19.99,
@@ -29,12 +30,12 @@ class _ExpensesState extends State<Expenses> {
   ];
 
   void _addExpense(Expense exp) {
-    setState(() => _registerExpenses.add(exp));
+    setState(() => _registeredExpenses.add(exp));
   }
 
   void _removeExpense(Expense exp) {
-    final index = _registerExpenses.indexOf(exp);
-    setState(() => _registerExpenses.remove(exp));
+    final index = _registeredExpenses.indexOf(exp);
+    setState(() => _registeredExpenses.remove(exp));
 
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -44,7 +45,7 @@ class _ExpensesState extends State<Expenses> {
         action: SnackBarAction(
           label: 'Undo',
           onPressed: () {
-            setState(() => _registerExpenses.insert(index, exp));
+            setState(() => _registeredExpenses.insert(index, exp));
           },
         ),
       ),
@@ -65,29 +66,36 @@ class _ExpensesState extends State<Expenses> {
       child: Text('No expenses to show'),
     );
 
+    print(MediaQuery.of(context).size.width);
+
+    final children = [
+      Expanded(
+        child: Chart(
+          expenses: _registeredExpenses,
+        ),
+      ),
+      Expanded(
+        child: _registeredExpenses.isEmpty
+            ? noContent
+            : ExpensesList(
+                expenses: _registeredExpenses,
+                removeExpense: _removeExpense,
+              ),
+      ),
+    ];
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Expense Tracker'),
-        actions: [
-          IconButton(
-            onPressed: showAddExpense,
-            icon: const Icon(Icons.add),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          const Text('Chart'),
-          Expanded(
-            child: _registerExpenses.isEmpty
-                ? noContent
-                : ExpensesList(
-                    expenses: _registerExpenses,
-                    removeExpense: _removeExpense,
-                  ),
-          ),
-        ],
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('Expense Tracker'),
+          actions: [
+            IconButton(
+              onPressed: showAddExpense,
+              icon: const Icon(Icons.add),
+            ),
+          ],
+        ),
+        body: const Column(
+          children: [Text('Column')],
+        ));
   }
 }

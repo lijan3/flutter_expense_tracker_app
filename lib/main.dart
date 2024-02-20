@@ -11,9 +11,11 @@ final kDarkColorScheme = ColorScheme.fromSeed(
 );
 
 void main() {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then(
+  //   (fn) => {
   runApp(
     MaterialApp(
-      themeMode: ThemeMode.light,
       darkTheme: ThemeData.dark().copyWith(
         colorScheme: kDarkColorScheme,
         appBarTheme: const AppBarTheme().copyWith(
@@ -56,4 +58,6 @@ void main() {
       home: const Expenses(),
     ),
   );
+  //   },
+  // );
 }
